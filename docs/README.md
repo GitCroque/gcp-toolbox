@@ -21,15 +21,24 @@ Bienvenue dans la documentation complète de Carnet !
 - **[Audit Service Account Keys](scripts/Audit-Service-Account-Keys.md)** ⭐ - Détection clés anciennes
 - **[Scan Public Buckets](scripts/Scan-Public-Buckets.md)** ⭐ - Détection data leaks
 - **[Audit Database Backups](scripts/Audit-Database-Backups.md)** ⭐ - Vérification backups Cloud SQL
+- **[Audit Firewall Rules](scripts/Audit-Firewall-Rules.md)** ⭐ - Détection règles dangereuses (0.0.0.0/0)
+- **[Scan Exposed Services](scripts/Scan-Exposed-Services.md)** ⭐ - Services exposés publiquement
 
 #### Scripts Coûts (Documentation Complète) 💰
 
 - **[Compare VM Rightsizing](scripts/Compare-VM-Rightsizing.md)** - Optimisation sizing VMs (15-30% économies)
+- **[Cleanup Old Projects](scripts/Cleanup-Old-Projects.md)** - Identification projets inactifs
 
 #### Scripts Inventaire (Documentation Complète) 📦
 
 - **[List Cloud SQL Instances](scripts/List-Cloud-SQL-Instances.md)** - Inventaire bases de données
 - **[List GKE Clusters](scripts/List-GKE-Clusters.md)** - Inventaire clusters Kubernetes
+- **[Generate Inventory Report](scripts/Generate-Inventory-Report.md)** - Rapport complet plateforme
+
+#### Scripts Gouvernance (Documentation Complète) 🏛️
+
+- **[Notify Project Owners](scripts/Notify-Project-Owners.md)** - Contact propriétaires pour validation
+- **[Audit Resource Labels](scripts/Audit-Resource-Labels.md)** - Vérification labeling ressources
 
 #### Autres Scripts
 
@@ -42,13 +51,16 @@ Pour les autres scripts, consultez la documentation inline dans chaque fichier `
 1. **[Audit Service Account Keys](scripts/Audit-Service-Account-Keys.md)** - Clés anciennes/compromises
 2. **[Scan Public Buckets](scripts/Scan-Public-Buckets.md)** - Buckets publics = data leak
 3. **[Audit Database Backups](scripts/Audit-Database-Backups.md)** - Backups manquants
+4. **[Audit Firewall Rules](scripts/Audit-Firewall-Rules.md)** - Règles firewall dangereuses
+5. **[Scan Exposed Services](scripts/Scan-Exposed-Services.md)** - Services publics
 
 ### 💰 Optimisation Coûts
 
 - **[Compare VM Rightsizing](scripts/Compare-VM-Rightsizing.md)** - Rightsizing (15-30% économies)
+- **[Cleanup Old Projects](scripts/Cleanup-Old-Projects.md)** - Projets inactifs ($2,400/mois économies)
 - `check-preemptible-candidates.sh` - Spot VMs (jusqu'à 91%)
 - `analyze-committed-use.sh` - CUDs (25-57%)
-- `find-unused-resources.sh` - Cleanup (5-15%)
+- `find-unused-resources.sh` - Cleanup ressources (5-15%)
 - `track-cost-anomalies.sh` - Détection pics
 
 ### 📦 Inventaire
@@ -56,11 +68,14 @@ Pour les autres scripts, consultez la documentation inline dans chaque fichier `
 - `list-all-vms.sh` - Toutes les VMs + coûts
 - **[List Cloud SQL Instances](scripts/List-Cloud-SQL-Instances.md)** - Bases de données
 - **[List GKE Clusters](scripts/List-GKE-Clusters.md)** - Clusters Kubernetes
+- **[Generate Inventory Report](scripts/Generate-Inventory-Report.md)** - Rapport complet
 - `audit-container-images.sh` - Images containers
 - `list-gcp-projects.sh` - Tous les projets
 
-### 🔍 Monitoring
+### 🏛️ Gouvernance
 
+- **[Notify Project Owners](scripts/Notify-Project-Owners.md)** - Review annuel projets
+- **[Audit Resource Labels](scripts/Audit-Resource-Labels.md)** - Vérification labels
 - `check-quotas.sh` - Utilisation quotas
 - `audit-iam-permissions.sh` - Permissions IAM
 - `list-projects-with-billing.sh` - Statut facturation
