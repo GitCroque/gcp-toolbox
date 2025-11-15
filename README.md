@@ -4,24 +4,24 @@
 [![Shell](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
 [![GCP](https://img.shields.io/badge/Cloud-Google%20Cloud-4285F4.svg)](https://cloud.google.com/)
 
-**Collection de 17 scripts Bash pour auditer, sécuriser et optimiser votre plateforme Google Cloud.**
+**Collection de 23+ scripts Bash pour auditer, sécuriser et optimiser votre plateforme Google Cloud.**
 
 ```bash
-# Quick Start
-git clone https://github.com/VOTRE-USERNAME/carnet.git
+# Quick Start - Audit complet en une commande !
+git clone https://github.com/GitCroque/carnet.git
 cd carnet
-./scripts/list-gcp-projects.sh
+./scripts/setup-carnet.sh        # Vérification prérequis
+./scripts/run-full-audit.sh      # Audit complet de votre plateforme
 ```
 
 ## 🎯 Que fait Carnet ?
 
 | Catégorie | Scripts | Bénéfices |
 |-----------|---------|-----------|
-| 🔐 **Sécurité** | 3 scripts | Détecte buckets publics, clés anciennes, permissions risquées |
-| 💾 **Bases de Données** | 2 scripts | Inventaire SQL, vérification backups |
-| ☁️ **Infrastructure** | 4 scripts | VMs, GKE, projets, ressources non utilisées |
-| 💰 **Optimisation Coûts** | 5 scripts | Rightsizing, Spot VMs, CUDs, images, anomalies |
-| 🔍 **Monitoring** | 2 scripts | Quotas, facturation |
+| 🔐 **Cybersécurité** | 6 scripts | Firewall, buckets publics, clés anciennes, services exposés, backups |
+| 🏛️ **Gouvernance** | 6 scripts | Projets inactifs, labels, propriétaires, inventaire, reporting |
+| 💰 **Optimisation Coûts** | 6 scripts | Rightsizing, cleanup, Spot VMs, CUDs, anomalies |
+| 📦 **Inventaire** | 5 scripts | VMs, SQL, GKE, projets, containers |
 
 **Économies potentielles** : 30-50% de vos coûts cloud 💰
 
@@ -51,12 +51,30 @@ cd carnet
 
 ## 📊 Scripts Disponibles
 
-### 🔴 PRIORITÉ CRITIQUE (Sécurité)
+### 🚀 AUDIT COMPLET (NOUVEAU !)
 
 ```bash
-./scripts/audit-service-account-keys.sh    # Détecte clés anciennes/jamais utilisées
-./scripts/scan-public-buckets.sh           # Trouve buckets exposés publiquement
-./scripts/audit-database-backups.sh        # Vérifie backups Cloud SQL
+./scripts/setup-carnet.sh           # ✨ Vérification prérequis & setup initial
+./scripts/run-full-audit.sh         # ✨ Exécute TOUS les audits en une commande
+```
+
+### 🔴 PRIORITÉ CRITIQUE (Cybersécurité)
+
+```bash
+./scripts/scan-public-buckets.sh           # Buckets exposés publiquement
+./scripts/audit-firewall-rules.sh          # ✨ Règles firewall dangereuses (0.0.0.0/0)
+./scripts/scan-exposed-services.sh         # ✨ VMs avec IP publiques
+./scripts/audit-service-account-keys.sh    # Clés anciennes (>365 jours)
+./scripts/audit-database-backups.sh        # Backups Cloud SQL manquants
+```
+
+### 🏛️ GOUVERNANCE & GESTION
+
+```bash
+./scripts/notify-project-owners.sh         # ✨ Contact propriétaires (review annuel)
+./scripts/cleanup-old-projects.sh          # ✨ Projets inactifs à supprimer
+./scripts/audit-resource-labels.sh         # ✨ Vérification labels (cost tracking)
+./scripts/generate-inventory-report.sh     # ✨ Rapport complet (Markdown/JSON)
 ```
 
 ### 💎 TOP ÉCONOMIES (FinOps)
@@ -98,12 +116,25 @@ cd carnet
 
 ## ⚡ Exemples d'Utilisation
 
+### 🔍 Audit Complet en Une Commande (10 min)
+
+```bash
+# Nouveau ! Exécute TOUS les audits critiques
+./scripts/run-full-audit.sh --output-dir ./audit-results
+
+# Avec notifications Slack
+./scripts/run-full-audit.sh --slack-webhook https://hooks.slack.com/...
+
+# Seulement alertes critiques
+./scripts/run-full-audit.sh --critical-only
+```
+
 ### Audit Sécurité Quotidien (5 min)
 
 ```bash
 ./scripts/scan-public-buckets.sh
+./scripts/audit-firewall-rules.sh
 ./scripts/audit-service-account-keys.sh --days 90
-./scripts/check-quotas.sh
 ```
 
 ### Rapport Mensuel Coûts (15 min)
@@ -139,7 +170,21 @@ cat vms.json | jq '.summary.estimated_monthly_cost_usd'
 
 ### CI/CD (GitHub Actions, GitLab CI)
 
-Voir [docs/Automation.md](docs/Automation.md) pour exemples complets.
+**GitHub Actions** - Prêt à l'emploi !
+
+```yaml
+# .github/workflows/gcp-security-audit.yml déjà inclus !
+# Audit quotidien automatique + notifications
+```
+
+**GitLab CI** - Prêt à l'emploi !
+
+```yaml
+# .gitlab-ci.yml déjà inclus !
+# Pipelines sécurité et coûts
+```
+
+Voir [docs/Workflows.md](docs/Workflows.md) pour configuration complète.
 
 ## 💡 ROI Typique
 

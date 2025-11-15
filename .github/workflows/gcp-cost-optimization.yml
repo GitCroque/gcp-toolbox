@@ -1,0 +1,59 @@
+name: 💰 GCP Cost Optimization
+
+on:
+  schedule:
+    # 1er de chaque mois à 9h UTC
+    - cron: '0 9 1 * *'
+  workflow_dispatch:
+
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+
+jobs:
+  cost-analysis:
+    name: Analyse Coûts GCP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: 💰 Analyse rightsizing VMs
+        run: |
+          chmod +x scripts/compare-vm-rightsizing.sh
+          ./scripts/compare-vm-rightsizing.sh --json > rightsizing.json
+
+      - name: 🗑️ Détection projets inactifs
+        run: |
+          chmod +x scripts/cleanup-old-projects.sh
+          ./scripts/cleanup-old-projects.sh --json > cleanup.json
+
+      - name: 📊 Calcul économies potentielles
+        id: savings
+        run: |
+          SAVINGS=$(jq '.summary.potential_monthly_savings_usd // 0' rightsizing.json)
+          echo "monthly_savings=$SAVINGS" >> $GITHUB_OUTPUT
+          echo "::notice::Économies potentielles: \$$SAVINGS/mois"
+
+      - name: 📧 Rapport mensuel (email)
+        if: env.REPORT_EMAIL != ''
+        env:
+          REPORT_EMAIL: ${{ secrets.REPORT_EMAIL }}
+        run: |
+          echo "Économies potentielles: \$${{ steps.savings.outputs.monthly_savings }}/mois" | \
+          mail -s "GCP Cost Report - $(date +%B\ %Y)" $REPORT_EMAIL
+
+      - name: 📤 Upload rapports
+        uses: actions/upload-artifact@v4
+        with:
+          name: cost-reports-${{ github.run_number }}
+          path: |
+            rightsizing.json
+            cleanup.json
+          retention-days: 90

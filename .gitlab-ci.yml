@@ -1,0 +1,102 @@
+# GitLab CI/CD pour Carnet GCP
+# Documentation: https://docs.gitlab.com/ee/ci/
+
+variables:
+  GCP_PROJECT_ID: $GCP_PROJECT_ID # Définir dans CI/CD Settings
+
+stages:
+  - setup
+  - audit
+  - report
+
+# ═══════════════════════════════════════════════════════════
+# Setup
+# ═══════════════════════════════════════════════════════════
+setup:
+  stage: setup
+  image: google/cloud-sdk:alpine
+  script:
+    - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > ${HOME}/gcloud-service-key.json
+    - gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
+    - gcloud config set project $GCP_PROJECT_ID
+    - gcloud auth list
+  only:
+    - schedules
+    - web
+
+# ═══════════════════════════════════════════════════════════
+# Security Audit
+# ═══════════════════════════════════════════════════════════
+security-audit:
+  stage: audit
+  image: google/cloud-sdk:alpine
+  before_script:
+    - apk add --no-cache bash jq
+    - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > ${HOME}/gcloud-service-key.json
+    - gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
+    - gcloud config set project $GCP_PROJECT_ID
+    - chmod +x scripts/*.sh
+  script:
+    - ./scripts/run-full-audit.sh --output-dir ./audit-results --critical-only
+  artifacts:
+    paths:
+      - audit-results/
+    expire_in: 30 days
+    reports:
+      junit: audit-results/*/junit-report.xml # Optionnel
+  allow_failure: true
+  only:
+    - schedules
+    - web
+
+# ═══════════════════════════════════════════════════════════
+# Cost Optimization
+# ═══════════════════════════════════════════════════════════
+cost-analysis:
+  stage: audit
+  image: google/cloud-sdk:alpine
+  before_script:
+    - apk add --no-cache bash jq
+    - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > ${HOME}/gcloud-service-key.json
+    - gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
+    - gcloud config set project $GCP_PROJECT_ID
+    - chmod +x scripts/*.sh
+  script:
+    - ./scripts/compare-vm-rightsizing.sh --json > rightsizing.json
+    - ./scripts/cleanup-old-projects.sh --json > cleanup.json
+    - echo "Économies potentielles:" && jq '.summary.potential_monthly_savings_usd' rightsizing.json
+  artifacts:
+    paths:
+      - rightsizing.json
+      - cleanup.json
+    expire_in: 90 days
+  only:
+    - schedules
+
+# ═══════════════════════════════════════════════════════════
+# Generate Report
+# ═══════════════════════════════════════════════════════════
+generate-report:
+  stage: report
+  image: alpine:latest
+  dependencies:
+    - security-audit
+    - cost-analysis
+  script:
+    - apk add --no-cache pandoc # Pour conversion Markdown → PDF (optionnel)
+    - ls -la audit-results/
+    - echo "Rapport disponible dans artifacts"
+  artifacts:
+    paths:
+      - audit-results/
+    expire_in: 30 days
+  only:
+    - schedules
+
+# ═══════════════════════════════════════════════════════════
+# Scheduled Pipelines
+# ═══════════════════════════════════════════════════════════
+# À configurer dans GitLab:
+# - CI/CD > Schedules
+# - Quotidien (sécurité): 0 8 * * *
+# - Mensuel (coûts): 0 9 1 * *
