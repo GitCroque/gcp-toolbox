@@ -34,11 +34,21 @@ output/
 rapport-*.txt
 rapport-*.json
 vms.json
+vms-*.json
 permissions.json
 quotas.json
 projects-*.json
 cleanup-*.json
 *-inventory.json
+buckets.json
+sa-keys.json
+iam.json
+audit*.json
+audit*.log
+audit*.txt
+security-reports/
+cost-reports/
+*.log
 
 # IDE
 .vscode/
