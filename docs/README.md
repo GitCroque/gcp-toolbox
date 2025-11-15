@@ -16,10 +16,20 @@ Bienvenue dans la documentation complète de Carnet !
 
 ### 🔐 Documentation des Scripts
 
-#### Scripts Sécurité (Documentation Complète)
+#### Scripts Sécurité (Documentation Complète) 🔐
 
 - **[Audit Service Account Keys](scripts/Audit-Service-Account-Keys.md)** ⭐ - Détection clés anciennes
 - **[Scan Public Buckets](scripts/Scan-Public-Buckets.md)** ⭐ - Détection data leaks
+- **[Audit Database Backups](scripts/Audit-Database-Backups.md)** ⭐ - Vérification backups Cloud SQL
+
+#### Scripts Coûts (Documentation Complète) 💰
+
+- **[Compare VM Rightsizing](scripts/Compare-VM-Rightsizing.md)** - Optimisation sizing VMs (15-30% économies)
+
+#### Scripts Inventaire (Documentation Complète) 📦
+
+- **[List Cloud SQL Instances](scripts/List-Cloud-SQL-Instances.md)** - Inventaire bases de données
+- **[List GKE Clusters](scripts/List-GKE-Clusters.md)** - Inventaire clusters Kubernetes
 
 #### Autres Scripts
 
@@ -29,13 +39,13 @@ Pour les autres scripts, consultez la documentation inline dans chaque fichier `
 
 ### 🔴 Sécurité Critique
 
-1. [Audit Service Account Keys](scripts/Audit-Service-Account-Keys.md) - Clés anciennes/compromises
-2. [Scan Public Buckets](scripts/Scan-Public-Buckets.md) - Buckets publics = data leak
-3. `audit-database-backups.sh` - Backups manquants
+1. **[Audit Service Account Keys](scripts/Audit-Service-Account-Keys.md)** - Clés anciennes/compromises
+2. **[Scan Public Buckets](scripts/Scan-Public-Buckets.md)** - Buckets publics = data leak
+3. **[Audit Database Backups](scripts/Audit-Database-Backups.md)** - Backups manquants
 
 ### 💰 Optimisation Coûts
 
-- `compare-vm-rightsizing.sh` - Rightsizing (15-30% économies)
+- **[Compare VM Rightsizing](scripts/Compare-VM-Rightsizing.md)** - Rightsizing (15-30% économies)
 - `check-preemptible-candidates.sh` - Spot VMs (jusqu'à 91%)
 - `analyze-committed-use.sh` - CUDs (25-57%)
 - `find-unused-resources.sh` - Cleanup (5-15%)
@@ -44,8 +54,8 @@ Pour les autres scripts, consultez la documentation inline dans chaque fichier `
 ### 📦 Inventaire
 
 - `list-all-vms.sh` - Toutes les VMs + coûts
-- `list-cloud-sql-instances.sh` - Bases de données
-- `list-gke-clusters.sh` - Clusters Kubernetes
+- **[List Cloud SQL Instances](scripts/List-Cloud-SQL-Instances.md)** - Bases de données
+- **[List GKE Clusters](scripts/List-GKE-Clusters.md)** - Clusters Kubernetes
 - `audit-container-images.sh` - Images containers
 - `list-gcp-projects.sh` - Tous les projets
 
@@ -68,7 +78,7 @@ Workflow : [Audit Quotidien](Workflows.md#-workflow-quotidien-devopssre)
 ### Je veux réduire mes coûts
 
 1. `find-unused-resources.sh`
-2. `compare-vm-rightsizing.sh`
+2. **[Compare VM Rightsizing](scripts/Compare-VM-Rightsizing.md)** - Guide complet
 3. `check-preemptible-candidates.sh`
 4. `analyze-committed-use.sh`
 
