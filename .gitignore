@@ -1,0 +1,37 @@
+# Fichiers de credentials GCP
+*.json
+!scripts/*.sh
+*.key
+*.pem
+credentials/
+
+# Fichiers de configuration locale
+.env
+.env.local
+*.local
+
+# Fichiers macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs
+*.log
+logs/
+
+# Fichiers temporaires
+*.tmp
+*.temp
+.cache/
+
+# Exports de données
+exports/
+*.csv
+output/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
