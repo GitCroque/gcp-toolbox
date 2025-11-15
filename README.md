@@ -1,26 +1,95 @@
-# Carnet - Gestion de Plateforme GCP
+# Carnet - Scripts de Gestion GCP
 
-Ce repository contient des scripts et outils pour la gestion de notre plateforme Google Cloud Platform (GCP).
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Shell](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
+[![GCP](https://img.shields.io/badge/Cloud-Google%20Cloud-4285F4.svg)](https://cloud.google.com/)
 
-## Prérequis
+Collection de scripts Bash pour la gestion, l'audit et l'optimisation de plateformes Google Cloud Platform (GCP).
 
-- **gcloud CLI** : Doit être installé et configuré sur votre Mac
-- **Authentification** : Vous devez être authentifié avec `gcloud auth login`
-- **Permissions** : Vous devez avoir les permissions nécessaires pour lister les projets et consulter les IAM policies
+## 📋 À propos
+
+**Carnet** est un ensemble de scripts shell qui vous aide à :
+
+- **Inventorier** vos ressources GCP (projets, VMs, disques, IPs)
+- **Auditer** vos permissions IAM et votre sécurité
+- **Optimiser** vos coûts en détectant les ressources inutilisées
+- **Surveiller** vos quotas pour éviter les dépassements
+- **Automatiser** vos rapports et exports grâce au support JSON
+
+Tous les scripts sont conçus pour être **simples, sécurisés et réutilisables** dans vos workflows CI/CD ou vos tâches cron.
+
+## 🎯 Pour qui ?
+
+- **DevOps / SREs** : Automatisation des audits et rapports
+- **FinOps Teams** : Optimisation des coûts cloud
+- **Cloud Architects** : Inventaire et conformité
+- **Security Teams** : Audits IAM réguliers
+- **Managers IT** : Rapports de gestion et visibilité
+
+## 🚀 Démarrage Rapide
+
+```bash
+# 1. Cloner le repository
+git clone https://github.com/VOTRE-USERNAME/carnet.git
+cd carnet
+
+# 2. Rendre les scripts exécutables (si nécessaire)
+chmod +x scripts/*.sh
+
+# 3. Lancer votre premier script
+./scripts/list-gcp-projects.sh
+```
+
+## 📦 Prérequis
+
+### Environnement
+
+- **OS** : macOS, Linux, ou WSL (Windows Subsystem for Linux)
+- **Shell** : Bash 4.0+
+- **gcloud CLI** : Version récente recommandée
 
 ### Installation de gcloud CLI
 
-Si ce n'est pas déjà fait :
+**macOS** :
 ```bash
-# Sur macOS
 brew install --cask google-cloud-sdk
+```
 
+**Linux (Debian/Ubuntu)** :
+```bash
+curl https://sdk.cloud.google.com | bash
+exec -l $SHELL
+```
+
+**Windows (WSL)** :
+```bash
+# Suivre les instructions Linux ci-dessus dans WSL
+```
+
+Voir la [documentation officielle](https://cloud.google.com/sdk/docs/install) pour d'autres méthodes.
+
+### Configuration initiale
+
+```bash
 # Initialisation
 gcloud init
 
 # Authentification
 gcloud auth login
+
+# Vérifier la configuration
+gcloud config list
 ```
+
+### Permissions GCP
+
+Les scripts nécessitent différentes permissions selon leurs fonctions. Au minimum :
+
+- **Viewer** : Pour les scripts de listing (projets, VMs)
+- **Security Reviewer** : Pour les audits IAM
+- **Billing Viewer** : Pour les informations de facturation
+
+Consultez le [README des scripts](scripts/README.md) pour les permissions détaillées par script.
 
 ## Scripts Disponibles
 
@@ -281,12 +350,85 @@ carnet/
     └── check-quotas.sh                 # Vérification des quotas
 ```
 
-## Contribution
+## 🤝 Contribution
 
-Pour ajouter de nouveaux scripts de gestion GCP, placez-les dans le dossier `scripts/` et mettez à jour ce README.
+Les contributions sont les bienvenues ! Voici comment contribuer :
 
-## Notes
+### Proposer un nouveau script
 
-- Les scripts utilisent la CLI `gcloud` et nécessitent une authentification active
-- Assurez-vous d'avoir les permissions appropriées pour accéder aux ressources GCP
-- La récupération du propriétaire peut prendre quelques secondes par projet
+1. **Fork** le repository
+2. Créez une **branche** : `git checkout -b feature/mon-nouveau-script`
+3. **Développez** votre script en suivant les [bonnes pratiques](scripts/README.md#bonnes-pratiques)
+4. **Testez** sur un environnement de développement
+5. **Documentez** dans les READMEs
+6. **Commit** : `git commit -m "feat: ajout script pour..."`
+7. **Push** : `git push origin feature/mon-nouveau-script`
+8. Ouvrez une **Pull Request**
+
+### Standards de qualité
+
+- ✅ Bash avec `set -euo pipefail`
+- ✅ Support JSON pour l'automatisation
+- ✅ Gestion d'erreurs propre
+- ✅ Documentation claire (en-tête du script + README)
+- ✅ Pas de secrets en dur
+- ✅ Messages informatifs et colorés
+
+### Idées de contributions
+
+Consultez les [Issues](../../issues) pour voir les scripts demandés ou proposez les vôtres :
+
+- Scripts pour Cloud SQL, Cloud Run, GKE
+- Automatisation de backup/restore
+- Rapports de conformité (SOC2, ISO27001)
+- Intégrations avec Slack, email, etc.
+- Scripts Terraform pour automatiser les déploiements
+
+## 🔒 Sécurité
+
+### Bonnes pratiques
+
+- **Ne committez jamais** de credentials, tokens ou clés API
+- Les scripts **ne modifient pas** vos ressources (lecture seule)
+- Utilisez des **service accounts** avec permissions minimales pour l'automatisation
+- Auditez les scripts avant de les exécuter sur production
+- Testez d'abord sur des projets de développement
+
+### Signaler une vulnérabilité
+
+Si vous découvrez une faille de sécurité, merci de **ne pas** ouvrir une issue publique. Contactez-nous directement à [VOTRE-EMAIL] ou via la fonctionnalité [Security Advisories](../../security/advisories) de GitHub.
+
+## 📝 Licence
+
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+
+Vous êtes libre de :
+- ✅ Utiliser ces scripts dans vos projets commerciaux
+- ✅ Modifier et adapter à vos besoins
+- ✅ Distribuer et partager
+
+## 📚 Ressources
+
+- [Documentation Google Cloud](https://cloud.google.com/docs)
+- [gcloud CLI Reference](https://cloud.google.com/sdk/gcloud/reference)
+- [Best Practices GCP](https://cloud.google.com/docs/enterprise/best-practices-for-enterprise-organizations)
+- [GCP Pricing Calculator](https://cloud.google.com/products/calculator)
+
+## 💬 Support
+
+- 📖 Consultez d'abord la [documentation des scripts](scripts/README.md)
+- 🐛 Pour les bugs, ouvrez une [Issue](../../issues)
+- 💡 Pour les questions, utilisez les [Discussions](../../discussions)
+- ⭐ Si ce projet vous est utile, n'hésitez pas à lui donner une étoile !
+
+## 🙏 Remerciements
+
+Merci à tous les contributeurs qui améliorent ce projet !
+
+## ⚠️ Disclaimer
+
+Ces scripts sont fournis "tels quels" sans garantie. Les estimations de coûts sont approximatives et peuvent varier selon votre configuration GCP. Testez toujours dans un environnement de développement avant utilisation en production.
+
+---
+
+**Développé avec ❤️ pour la communauté GCP**

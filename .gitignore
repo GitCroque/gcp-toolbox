@@ -1,9 +1,13 @@
 # Fichiers de credentials GCP
-*.json
-!scripts/*.sh
+# Note: Les fichiers JSON de service accounts contiennent des credentials
+# Si vous avez besoin d'ajouter des JSON de config, utilisez !nom-fichier.json
+*-credentials.json
+*-key.json
+service-account*.json
 *.key
 *.pem
 credentials/
+keys/
 
 # Fichiers de configuration locale
 .env
@@ -24,10 +28,17 @@ logs/
 *.temp
 .cache/
 
-# Exports de données
+# Exports de données générés par les scripts
 exports/
-*.csv
 output/
+rapport-*.txt
+rapport-*.json
+vms.json
+permissions.json
+quotas.json
+projects-*.json
+cleanup-*.json
+*-inventory.json
 
 # IDE
 .vscode/
