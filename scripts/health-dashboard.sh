@@ -35,7 +35,7 @@ show_dashboard() {
     if [[ "$JSON_MODE" == false ]]; then
         echo -e "${WHITE}╔════════════════════════════════════════════════════════════════════════╗${NC}"
         echo -e "${WHITE}║                                                                        ║${NC}"
-        echo -e "${WHITE}║           📊 CARNET - HEALTH DASHBOARD GCP 📊                         ║${NC}"
+        echo -e "${WHITE}║           📊 GCP TOOLBOX - HEALTH DASHBOARD GCP 📊                    ║${NC}"
         echo -e "${WHITE}║                                                                        ║${NC}"
         echo -e "${WHITE}╚════════════════════════════════════════════════════════════════════════╝${NC}"
         echo ""

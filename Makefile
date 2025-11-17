@@ -26,7 +26,7 @@ help: ## Affiche cette aide
 	@echo ""
 
 setup: ## Vérification prérequis et setup initial
-	@echo "$(CYAN)🚀 Setup Carnet...$(NC)"
+	@echo "$(CYAN)🚀 Setup GCP Toolbox...$(NC)"
 	@chmod +x scripts/*.sh
 	@./scripts/setup-carnet.sh
 
@@ -111,13 +111,13 @@ test: setup ## Teste que tous les scripts s'exécutent
 	@echo "$(GREEN)✓ Tous les scripts sont valides$(NC)"
 
 # Installation
-install: setup ## Installe Carnet dans /usr/local/bin (nécessite sudo)
+install: setup ## Installe GCP Toolbox dans /usr/local/bin (nécessite sudo)
 	@echo "$(CYAN)📦 Installation...$(NC)"
-	@sudo mkdir -p /usr/local/bin/carnet
-	@sudo cp -r scripts /usr/local/bin/carnet/
-	@sudo cp -r docs /usr/local/bin/carnet/
-	@echo "$(GREEN)✓ Installé dans /usr/local/bin/carnet$(NC)"
-	@echo "$(YELLOW)Ajoutez au PATH: export PATH=\$$PATH:/usr/local/bin/carnet/scripts$(NC)"
+	@sudo mkdir -p /usr/local/bin/gcp-toolbox
+	@sudo cp -r scripts /usr/local/bin/gcp-toolbox/
+	@sudo cp -r config /usr/local/bin/gcp-toolbox/
+	@echo "$(GREEN)✓ Installé dans /usr/local/bin/gcp-toolbox$(NC)"
+	@echo "$(YELLOW)Ajoutez au PATH: export PATH=\$$PATH:/usr/local/bin/gcp-toolbox/scripts$(NC)"
 
 # Version & Info
 version: ## Affiche la version

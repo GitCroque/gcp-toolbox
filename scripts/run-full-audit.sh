@@ -41,7 +41,7 @@ mkdir -p "$REPORT_DIR"
 
 echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${CYAN}║                                                            ║${NC}"
-echo -e "${CYAN}║         🔍 CARNET - AUDIT COMPLET GCP 🔍                  ║${NC}"
+echo -e "${CYAN}║         🔍 GCP TOOLBOX - AUDIT COMPLET GCP 🔍             ║${NC}"
 echo -e "${CYAN}║                                                            ║${NC}"
 echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
 echo ""
@@ -156,7 +156,7 @@ echo -e "${CYAN}═════════════════════�
 REPORT_FILE="$REPORT_DIR/AUDIT-REPORT.md"
 
 cat > "$REPORT_FILE" <<EOF
-# 🔍 Rapport d'Audit GCP - Carnet
+# 🔍 Rapport d'Audit GCP - GCP Toolbox
 
 **Date**: $(date '+%Y-%m-%d %H:%M:%S')
 **Généré par**: \`run-full-audit.sh\`

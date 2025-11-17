@@ -3,7 +3,7 @@ set -euo pipefail
 
 #####################################################################
 # Script: setup-carnet.sh
-# Description: Vérifie les prérequis et configure Carnet
+# Description: Vérifie les prérequis et configure GCP Toolbox
 #              pour la première utilisation
 #
 # Usage: ./setup-carnet.sh
@@ -14,7 +14,7 @@ BLUE='\033[0;34m'; CYAN='\033[0;36m'; NC='\033[0m'
 
 echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${CYAN}║                                                            ║${NC}"
-echo -e "${CYAN}║         🚀 CARNET - SETUP & VÉRIFICATION 🚀               ║${NC}"
+echo -e "${CYAN}║         🚀 GCP TOOLBOX - SETUP & VÉRIFICATION 🚀          ║${NC}"
 echo -e "${CYAN}║                                                            ║${NC}"
 echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
 echo ""
@@ -189,7 +189,7 @@ echo ""
 
 if [[ $errors -eq 0 && $warnings -eq 0 ]]; then
     echo -e "${GREEN}✅ TOUT EST OK !${NC}"
-    echo -e "${GREEN}   Carnet est prêt à l'emploi.${NC}"
+    echo -e "${GREEN}   GCP Toolbox est prêt à l'emploi.${NC}"
     echo ""
     echo -e "${CYAN}🚀 Prochaines étapes:${NC}"
     echo -e "  1. Exécuter votre premier audit:"
@@ -203,14 +203,14 @@ if [[ $errors -eq 0 && $warnings -eq 0 ]]; then
     exit 0
 elif [[ $errors -eq 0 ]]; then
     echo -e "${YELLOW}⚠️  $warnings avertissement(s)${NC}"
-    echo -e "${YELLOW}   Carnet est fonctionnel mais certaines fonctionnalités peuvent être limitées.${NC}"
+    echo -e "${YELLOW}   GCP Toolbox est fonctionnel mais certaines fonctionnalités peuvent être limitées.${NC}"
     echo ""
     echo -e "${CYAN}🚀 Vous pouvez commencer:${NC}"
     echo -e "   ${YELLOW}./scripts/run-full-audit.sh${NC}"
     exit 0
 else
     echo -e "${RED}❌ $errors erreur(s) | $warnings avertissement(s)${NC}"
-    echo -e "${RED}   Corrigez les erreurs ci-dessus avant d'utiliser Carnet.${NC}"
+    echo -e "${RED}   Corrigez les erreurs ci-dessus avant d'utiliser GCP Toolbox.${NC}"
     echo ""
     echo -e "${CYAN}📚 Documentation:${NC}"
     echo -e "   ${YELLOW}https://github.com/GitCroque/gcp-toolbox/wiki/Quick-Start${NC}"
