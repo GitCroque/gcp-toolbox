@@ -18,15 +18,18 @@ keys/
 .DS_Store
 .AppleDouble
 .LSOverride
+._*
 
 # Logs
 *.log
 logs/
+/tmp/gcp-toolbox*.log
 
 # Fichiers temporaires
 *.tmp
 *.temp
 .cache/
+/tmp/
 
 # Exports de données générés par les scripts
 exports/
@@ -48,7 +51,15 @@ audit*.log
 audit*.txt
 security-reports/
 cost-reports/
-*.log
+
+# Répertoires générés par les scripts
+audit-reports/
+inventory-reports/
+
+# Backups de scripts
+*.sh.bak
+*.sh.tmp
+*.sh.old
 
 # IDE
 .vscode/
@@ -56,3 +67,13 @@ cost-reports/
 *.swp
 *.swo
 *~
+
+# Python (si scripts Python ajoutés ultérieurement)
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# Archives CI/CD déjà trackées
+!archives/

@@ -1,7 +1,8 @@
-# Makefile pour Carnet GCP
+# Makefile pour GCP Toolbox
 # Simplifie l'utilisation des scripts avec des commandes courtes
+# Usage manuel sur demande - Pas d'automatisation forcée
 
-.PHONY: help setup audit security costs governance inventory dashboard watch clean
+.PHONY: help setup security costs governance inventory clean
 
 # Couleurs
 CYAN := \033[0;36m
@@ -11,15 +12,17 @@ NC := \033[0m
 
 help: ## Affiche cette aide
 	@echo "$(CYAN)╔════════════════════════════════════════════════════════╗$(NC)"
-	@echo "$(CYAN)║          Carnet GCP - Makefile Commands               ║$(NC)"
+	@echo "$(CYAN)║          GCP Toolbox - Commandes Disponibles          ║$(NC)"
 	@echo "$(CYAN)╚════════════════════════════════════════════════════════╝$(NC)"
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-15s$(NC) %s\n", $$1, $$2}'
 	@echo ""
 	@echo "$(YELLOW)Exemples:$(NC)"
 	@echo "  make setup      # Configuration initiale"
-	@echo "  make audit      # Audit complet"
-	@echo "  make dashboard  # Dashboard en temps réel"
+	@echo "  make security   # Audits de sécurité"
+	@echo "  make costs      # Analyse des coûts"
+	@echo ""
+	@echo "$(GREEN)Philosophie:$(NC) Exécution manuelle sur demande - Vous gardez le contrôle!"
 	@echo ""
 
 setup: ## Vérification prérequis et setup initial
@@ -27,13 +30,9 @@ setup: ## Vérification prérequis et setup initial
 	@chmod +x scripts/*.sh
 	@./scripts/setup-carnet.sh
 
-audit: ## Exécute audit complet (sécurité + gouvernance + coûts)
-	@echo "$(CYAN)🔍 Audit complet...$(NC)"
-	@./scripts/run-full-audit.sh --output-dir ./audit-reports/audit-$(shell date +%Y%m%d-%H%M%S)
-
-audit-critical: ## Audit rapide (seulement critiques)
-	@echo "$(CYAN)🔍 Audit critique...$(NC)"
-	@./scripts/run-full-audit.sh --critical-only
+# Audit complet supprimé - Préférer exécution manuelle des scripts individuels
+# Si vous voulez un audit complet, exécutez:
+#   ./scripts/run-full-audit.sh --output-dir ./audit-reports/
 
 security: ## Audits de sécurité uniquement
 	@echo "$(CYAN)🔐 Audits sécurité...$(NC)"
@@ -63,11 +62,10 @@ inventory: ## Génère inventaire complet
 	@./scripts/list-cloud-sql-instances.sh
 	@./scripts/list-gke-clusters.sh
 
-dashboard: ## Affiche dashboard de santé
-	@./scripts/health-dashboard.sh
-
-watch: ## Dashboard en mode watch (rafraîchit toutes les 30s)
-	@./scripts/health-dashboard.sh --watch
+# Dashboard supprimé - Préférer exécution manuelle
+# Si vous voulez le dashboard, exécutez directement:
+#   ./scripts/health-dashboard.sh
+#   ./scripts/health-dashboard.sh --watch
 
 # Exports JSON
 export-json: ## Exporte tous les audits en JSON
@@ -123,17 +121,20 @@ install: setup ## Installe Carnet dans /usr/local/bin (nécessite sudo)
 
 # Version & Info
 version: ## Affiche la version
-	@echo "Carnet GCP v2.0.0 - Professional Edition"
+	@echo "GCP Toolbox v2.1.0 - macOS Edition"
 	@echo "Scripts: $(shell ls -1 scripts/*.sh | wc -l)"
 	@echo "Documentation: $(shell find docs -name '*.md' | wc -l) pages"
+	@echo "Bibliothèque: scripts/lib/common.sh"
 
 info: ## Informations sur le repository
 	@echo "$(CYAN)╔════════════════════════════════════════════════════════╗$(NC)"
-	@echo "$(CYAN)║              Carnet GCP - Repository Info             ║$(NC)"
+	@echo "$(CYAN)║           GCP Toolbox - Repository Info               ║$(NC)"
 	@echo "$(CYAN)╚════════════════════════════════════════════════════════╝$(NC)"
 	@echo ""
-	@echo "$(GREEN)Scripts:$(NC)         $(shell ls -1 scripts/*.sh | wc -l)"
-	@echo "$(GREEN)Documentation:$(NC)   $(shell find docs -name '*.md' | wc -l) pages"
-	@echo "$(GREEN)Workflows:$(NC)       $(shell ls -1 .github/workflows/*.yml 2>/dev/null | wc -l) GitHub Actions"
+	@echo "$(GREEN)Scripts:$(NC)         $(shell ls -1 scripts/*.sh 2>/dev/null | wc -l)"
+	@echo "$(GREEN)Bibliothèque:$(NC)    scripts/lib/common.sh (500+ lignes)"
+	@echo "$(GREEN)Documentation:$(NC)   $(shell find docs -name '*.md' 2>/dev/null | wc -l) pages"
+	@echo "$(GREEN)Config:$(NC)          config/pricing.conf"
+	@echo "$(GREEN)CI/CD archivé:$(NC)   archives/ci-cd/"
 	@echo "$(GREEN)Dernière modif:$(NC) $(shell git log -1 --format=%cd --date=short 2>/dev/null || echo 'N/A')"
 	@echo ""
