@@ -235,9 +235,9 @@ cat >> "$REPORT_FILE" <<EOF
 
 ## 🔗 Liens Utiles
 
-- [Documentation Carnet](../docs/README.md)
-- [Quick Fix Guide](../docs/Quick-Start.md)
-- [Workflows](../docs/Workflows.md)
+- [Documentation complète](https://github.com/GitCroque/gcp-toolbox/wiki/Home)
+- [Quick Fix Guide](https://github.com/GitCroque/gcp-toolbox/wiki/Quick-Start)
+- [Workflows](https://github.com/GitCroque/gcp-toolbox/wiki/Workflows)
 
 ---
 

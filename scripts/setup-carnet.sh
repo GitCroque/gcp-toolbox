@@ -199,7 +199,7 @@ if [[ $errors -eq 0 && $warnings -eq 0 ]]; then
     echo -e "     ${YELLOW}./scripts/list-gcp-projects.sh${NC}"
     echo ""
     echo -e "  3. Consulter la documentation:"
-    echo -e "     ${YELLOW}cat docs/Quick-Start.md${NC}"
+    echo -e "     ${YELLOW}open https://github.com/GitCroque/gcp-toolbox/wiki/Quick-Start${NC}"
     exit 0
 elif [[ $errors -eq 0 ]]; then
     echo -e "${YELLOW}⚠️  $warnings avertissement(s)${NC}"
@@ -213,6 +213,6 @@ else
     echo -e "${RED}   Corrigez les erreurs ci-dessus avant d'utiliser Carnet.${NC}"
     echo ""
     echo -e "${CYAN}📚 Documentation:${NC}"
-    echo -e "   ${YELLOW}https://github.com/GitCroque/carnet/blob/main/docs/Quick-Start.md${NC}"
+    echo -e "   ${YELLOW}https://github.com/GitCroque/gcp-toolbox/wiki/Quick-Start${NC}"
     exit 1
 fi

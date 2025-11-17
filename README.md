@@ -5,7 +5,7 @@
 [![GCP](https://img.shields.io/badge/Cloud-Google%20Cloud-4285F4.svg)](https://cloud.google.com/)
 [![Scripts](https://img.shields.io/badge/Scripts-27-brightgreen.svg)]()
 [![macOS](https://img.shields.io/badge/macOS-Compatible-success.svg)]()
-[![Documentation](https://img.shields.io/badge/Docs-Complete-blue.svg)](docs/)
+[![Documentation](https://img.shields.io/badge/Docs-Complete-blue.svg)](https://github.com/GitCroque/gcp-toolbox/wiki/Home)
 
 **Collection de 27 scripts Bash professionnels pour auditer, sécuriser et optimiser Google Cloud Platform - Optimisé pour usage manuel sur macOS.**
 
@@ -247,11 +247,6 @@ gcp-toolbox/
 │   └── ...
 ├── config/
 │   └── pricing.conf            # Prix GCP configurables (NEW!)
-├── docs/                       # Documentation complète
-│   ├── Quick-Start.md
-│   ├── Workflows.md
-│   ├── FAQ.md
-│   └── scripts/                # Docs par script
 ├── archives/
 │   └── ci-cd/                  # CI/CD archivés (optionnels)
 ├── Makefile                    # Commandes rapides
@@ -411,14 +406,16 @@ brew install coreutils
 
 ## 📚 Documentation Complète
 
-- 🚀 [Quick Start (5 min)](docs/Quick-Start.md)
-- 🔄 [Workflows Détaillés](docs/Workflows.md)
-- ❓ [FAQ (30+ questions)](docs/FAQ.md)
+> Toute la documentation détaillée est désormais publiée sur le [Wiki GitHub](https://github.com/GitCroque/gcp-toolbox/wiki).
+
+- 🚀 [Quick Start (5 min)](https://github.com/GitCroque/gcp-toolbox/wiki/Quick-Start)
+- 🔄 [Workflows Détaillés](https://github.com/GitCroque/gcp-toolbox/wiki/Workflows)
+- ❓ [FAQ (30+ questions)](https://github.com/GitCroque/gcp-toolbox/wiki/FAQ)
 - 📊 [AUDIT_REPORT.md](AUDIT_REPORT.md) - Rapport technique complet
 - 🤝 [CONTRIBUTING.md](CONTRIBUTING.md) - Guide de contribution
 - 📝 [CHANGELOG.md](CHANGELOG.md) - Historique des versions
 
-**Documentation par script** : `docs/scripts/`
+**Documentation par script** : consultez la section "Scripts" du [Wiki](https://github.com/GitCroque/gcp-toolbox/wiki)
 
 ---
 
@@ -496,11 +493,11 @@ Si ces scripts vous aident à économiser de l'argent ou à sécuriser votre pla
 
 ## 📞 Contact & Aide
 
-- 📖 [Documentation Complète](docs/HOME.md)
-- 🐛 [Rapporter un Bug](../../issues)
-- 💡 [Demander une Fonctionnalité](../../issues)
-- 💬 [Discussions](../../discussions)
+- 📖 [Documentation Complète](https://github.com/GitCroque/gcp-toolbox/wiki/Home)
+- 🐛 [Rapporter un Bug](https://github.com/GitCroque/gcp-toolbox/issues)
+- 💡 [Demander une Fonctionnalité](https://github.com/GitCroque/gcp-toolbox/issues)
+- 💬 [Discussions](https://github.com/GitCroque/gcp-toolbox/discussions)
 
 ---
 
-**Développé avec ❤️ pour les équipes GCP qui veulent garder le contrôle** | [📚 Docs](docs/HOME.md) | [🚀 Changelog](CHANGELOG.md) | [🔍 Audit](AUDIT_REPORT.md)
+**Développé avec ❤️ pour les équipes GCP qui veulent garder le contrôle** | [📚 Docs](https://github.com/GitCroque/gcp-toolbox/wiki/Home) | [🚀 Changelog](CHANGELOG.md) | [🔍 Audit](AUDIT_REPORT.md)

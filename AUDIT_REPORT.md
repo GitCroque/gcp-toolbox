@@ -529,8 +529,8 @@ fi
 1. Mettre à jour README.md (usage Mac)
 2. Créer guide migration common.sh
 3. Mettre à jour CONTRIBUTING.md
-4. Créer docs/TROUBLESHOOTING.md
-5. Créer docs/PERFORMANCE.md
+4. Créer page Wiki `Troubleshooting.md`
+5. Créer page Wiki `Performance.md`
 
 ---
 

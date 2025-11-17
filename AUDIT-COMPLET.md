@@ -448,10 +448,10 @@ make setup-alerting
 make doc-generate
 
 # 2. Architecture doc
-docs/ARCHITECTURE.md
+Wiki/Architecture.md
 
 # 3. Security policy
-docs/SECURITY.md
+Wiki/Security.md
 ```
 
 ---
