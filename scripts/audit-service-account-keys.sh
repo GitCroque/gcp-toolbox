@@ -24,17 +24,15 @@
 
 set -euo pipefail
 
-# Couleurs pour l'affichage
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-MAGENTA='\033[0;35m'
-NC='\033[0m' # No Color
+# Charger bibliothèque commune
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh" || {
+    echo "Erreur: Impossible de charger lib/common.sh" >&2
+    exit 1
+}
 
 # Options par défaut
-JSON_MODE=false
 DAYS_THRESHOLD=90
 SINGLE_PROJECT=""
 
@@ -60,8 +58,8 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Fonction d'affichage de l'en-tête
-print_header() {
+# Fonction d'affichage de l'en-tête (utilise print_header de common.sh si JSON_MODE=false)
+show_header() {
     if [[ "$JSON_MODE" == false ]]; then
         echo -e "${RED}========================================${NC}"
         echo -e "${RED}  ⚠️  AUDIT CLÉS SERVICE ACCOUNTS${NC}"
@@ -71,20 +69,8 @@ print_header() {
     fi
 }
 
-# Fonction pour calculer l'âge en jours
-calculate_days_ago() {
-    local timestamp=$1
-    local current_time=$(date +%s)
-    local resource_time=$(date -d "$timestamp" +%s 2>/dev/null || echo "0")
-
-    if [[ "$resource_time" == "0" ]]; then
-        echo "?"
-    else
-        local diff_seconds=$((current_time - resource_time))
-        local diff_days=$((diff_seconds / 86400))
-        echo "$diff_days"
-    fi
-}
+# La fonction calculate_days_ago() est maintenant fournie par common.sh
+# Elle gère automatiquement macOS (BSD date) et Linux (GNU date)
 
 # Fonction pour déterminer le niveau de risque
 get_risk_level() {
@@ -128,7 +114,7 @@ if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" &> /dev/n
     exit 1
 fi
 
-print_header
+show_header
 
 # Compteurs
 total_keys=0
