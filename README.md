@@ -405,12 +405,7 @@ brew install coreutils
 # Option 2: Les scripts migrés vers common.sh gèrent BSD date automatiquement
 ```
 
-**Scripts nécessitant migration** (utilisent encore `date -d`) :
-- `audit-service-account-keys.sh`
-- `find-unused-resources.sh`
-- `notify-project-owners.sh`
-
-**Solution temporaire** : Installer `coreutils` OU voir `AUDIT_REPORT.md` pour plan de migration.
+**Compatibilité totale** : tous les scripts utilisent désormais `scripts/lib/common.sh` pour les opérations de dates. Le fallback automatique privilégie `gdate` s'il est présent, sinon bascule sur `python3` (inclus par défaut sur macOS) pour parser les timestamps ISO. Plus besoin d'installer `coreutils` manuellement.
 
 ---
 

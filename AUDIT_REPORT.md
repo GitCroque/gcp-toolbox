@@ -46,7 +46,7 @@ date -d "2024-01-15" +%s
 
 **✅ CORRIGÉ**: La fonction `calculate_days_ago()` dans `scripts/lib/common.sh` gère les deux systèmes.
 
-**Action requise**: Migrer les scripts pour utiliser la bibliothèque commune.
+**Statut (nov. 2025)**: Tous les scripts ont été migrés vers `common.sh` et un fallback automatique (gdate ou python3) élimine toute dépendance à `date -d`.
 
 ---
 

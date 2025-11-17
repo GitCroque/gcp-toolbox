@@ -33,6 +33,20 @@ declare -g GCLOUD_TIMEOUT="${GCLOUD_TIMEOUT:-300}"
 declare -g IS_MACOS=false
 [[ "$OSTYPE" == "darwin"* ]] && IS_MACOS=true
 
+# Compatibilité date GNU/BSD
+declare -g GNU_DATE_BIN=""
+declare -g BSD_DATE_AVAILABLE=false
+
+if command -v gdate >/dev/null 2>&1; then
+    GNU_DATE_BIN="$(command -v gdate)"
+elif date -d "@0" +%s >/dev/null 2>&1; then
+    GNU_DATE_BIN="date"
+fi
+
+if [[ "$IS_MACOS" == true ]]; then
+    BSD_DATE_AVAILABLE=true
+fi
+
 # ═══════════════════════════════════════════════════════════
 # LOGGING
 # ═══════════════════════════════════════════════════════════
@@ -196,6 +210,74 @@ gcloud_with_timeout() {
 # ═══════════════════════════════════════════════════════════
 
 # Calcule le nombre de jours depuis un timestamp ISO
+date_to_epoch() {
+    local timestamp=$1
+    local epoch=""
+
+    if [[ -z "$timestamp" ]]; then
+        log_warn "Timestamp vide fourni à date_to_epoch"
+        return 1
+    fi
+
+    # Préférence GNU date (gdate ou date GNU)
+    if [[ -n "$GNU_DATE_BIN" ]]; then
+        epoch=$("$GNU_DATE_BIN" -u -d "$timestamp" +%s 2>/dev/null) && {
+            echo "$epoch"
+            return 0
+        }
+    fi
+
+    # macOS (BSD date)
+    if [[ "$BSD_DATE_AVAILABLE" == true ]]; then
+        local clean_timestamp="${timestamp%%.*}"
+        clean_timestamp="${clean_timestamp%Z}"
+        epoch=$(date -u -j -f "%Y-%m-%dT%H:%M:%S" "$clean_timestamp" +%s 2>/dev/null)
+        if [[ -n "$epoch" ]]; then
+            echo "$epoch"
+            return 0
+        fi
+    fi
+
+    # Fallback Python (standard library uniquement)
+    if command -v python3 >/dev/null 2>&1; then
+        epoch=$(python3 - "$timestamp" <<'PY'
+import sys
+from datetime import datetime, timezone
+
+ts = sys.argv[1].strip()
+if ts.endswith("Z"):
+    ts = ts[:-1] + "+00:00"
+
+dt = None
+try:
+    dt = datetime.fromisoformat(ts)
+except ValueError:
+    try:
+        dt = datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S")
+        dt = dt.replace(tzinfo=timezone.utc)
+    except ValueError:
+        pass
+
+if dt is None:
+    print("")
+    sys.exit(1)
+
+if dt.tzinfo is None:
+    dt = dt.replace(tzinfo=timezone.utc)
+
+print(int(dt.timestamp()))
+PY
+)
+        if [[ $? -eq 0 && "$epoch" =~ ^[0-9]+$ ]]; then
+            echo "$epoch"
+            return 0
+        fi
+    fi
+
+    log_warn "Impossible de convertir le timestamp '$timestamp'. Installez coreutils (gdate) ou python3."
+    return 1
+}
+
 calculate_days_ago() {
     local timestamp=$1
     local current_time
@@ -204,20 +286,7 @@ calculate_days_ago() {
     # Obtient timestamp actuel
     current_time=$(date +%s)
 
-    # Parse timestamp selon OS
-    if [[ "$IS_MACOS" == true ]]; then
-        # macOS (BSD date)
-        # Format attendu: 2024-01-15T10:30:45Z ou 2024-01-15T10:30:45.123456Z
-        local clean_timestamp="${timestamp%%.*}"  # Retire microsecondes
-        clean_timestamp="${clean_timestamp%Z}"     # Retire Z
-
-        resource_time=$(date -j -f "%Y-%m-%dT%H:%M:%S" "$clean_timestamp" +%s 2>/dev/null || echo "0")
-    else
-        # Linux (GNU date)
-        resource_time=$(date -d "$timestamp" +%s 2>/dev/null || echo "0")
-    fi
-
-    if [[ "$resource_time" == "0" ]]; then
+    if ! resource_time=$(date_to_epoch "$timestamp"); then
         echo "?"
         return 1
     fi
@@ -233,13 +302,32 @@ calculate_days_ago() {
 calculate_past_date() {
     local days=$1
 
-    if [[ "$IS_MACOS" == true ]]; then
-        # macOS (BSD date)
-        date -u -v -"${days}"d +"%Y-%m-%dT%H:%M:%SZ"
-    else
-        # Linux (GNU date)
-        date -u -d "$days days ago" +"%Y-%m-%dT%H:%M:%SZ"
+    if [[ -n "$GNU_DATE_BIN" ]]; then
+        "$GNU_DATE_BIN" -u -d "$days days ago" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null && return 0
     fi
+
+    if [[ "$BSD_DATE_AVAILABLE" == true ]]; then
+        date -u -v -"${days}"d +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null && return 0
+    fi
+
+    if command -v python3 >/dev/null 2>&1; then
+        python3 - "$days" <<'PY'
+import sys
+from datetime import datetime, timedelta, timezone
+
+try:
+    days = int(sys.argv[1])
+except (IndexError, ValueError):
+    days = 0
+
+target = datetime.now(timezone.utc) - timedelta(days=days)
+print(target.strftime("%Y-%m-%dT%H:%M:%SZ"))
+PY
+        return 0
+    fi
+
+    log_warn "Impossible de calculer la date à J-$days (installez coreutils ou python3)."
+    return 1
 }
 
 # Timestamp actuel ISO
