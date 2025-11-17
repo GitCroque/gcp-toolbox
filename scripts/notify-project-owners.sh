@@ -19,8 +19,13 @@ set -euo pipefail
 #   --output-csv FILE     : Export CSV pour mailing
 #####################################################################
 
-RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
-BLUE='\033[0;34m'; CYAN='\033[0;36m'; NC='\033[0m'
+# Charger bibliothèque commune
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh" || {
+    echo "Erreur: Impossible de charger lib/common.sh" >&2
+    exit 1
+}
 
 # Options
 JSON_MODE=false
@@ -52,7 +57,8 @@ fi
 # Fonction pour obtenir la dernière activité d'un projet
 get_last_activity() {
     local project_id=$1
-    local cutoff_date=$(date -u -d "$INACTIVE_DAYS days ago" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u -v-${INACTIVE_DAYS}d +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || echo "2024-08-15T00:00:00Z")
+    # Utilise calculate_past_date() de common.sh (compatible macOS/Linux)
+    local cutoff_date=$(calculate_past_date "$INACTIVE_DAYS")
 
     # Vérifie logs d'activité récente (simplifié - en prod utiliser Cloud Logging)
     local has_recent_activity="unknown"
@@ -80,7 +86,7 @@ unknown_projects=0
 
 if [[ "$JSON_MODE" == true ]]; then
     echo '{'
-    echo '  "generated_at": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'",'
+    echo '  "generated_at": "'$(get_current_timestamp)'",'
     echo '  "inactive_threshold_days": '$INACTIVE_DAYS','
     echo '  "projects": ['
     first=true
