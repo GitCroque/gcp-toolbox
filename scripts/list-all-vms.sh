@@ -19,28 +19,85 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# Mode JSON si argument --json
+# Mode JSON + sélection de projets via arguments/env
+usage() {
+    cat <<EOF
+Usage: ./list-all-vms.sh [options]
+
+Options:
+  --json                Sortie JSON
+  -p, --project ID      Ajoute un projet (répéter si besoin)
+  --projects CSV        Liste de projets séparés par des virgules
+  -h, --help            Affiche cette aide
+
+Vous pouvez aussi définir la variable d'environnement GCP_PROJECTS
+avec une liste de projets séparés par des virgules.
+EOF
+}
+
 JSON_MODE=false
-if [[ "${1:-}" == "--json" ]]; then
-    JSON_MODE=true
+PROJECT_FILTERS=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --json)
+            JSON_MODE=true
+            ;;
+        -p|--project)
+            if [[ -z "${2:-}" ]]; then
+                echo "Erreur: --project nécessite un identifiant" >&2
+                exit 1
+            fi
+            PROJECT_FILTERS+=("$2")
+            shift
+            ;;
+        --projects)
+            if [[ -z "${2:-}" ]]; then
+                echo "Erreur: --projects nécessite une liste CSV" >&2
+                exit 1
+            fi
+            IFS=',' read -ra tmp_projects <<< "$2"
+            for p in "${tmp_projects[@]}"; do
+                p=${p//[[:space:]]/}
+                [[ -n "$p" ]] && PROJECT_FILTERS+=("$p")
+            done
+            shift
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Option inconnue: $1" >&2
+            usage
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+if [[ ${#PROJECT_FILTERS[@]} -eq 0 && -n "${GCP_PROJECTS:-}" ]]; then
+    IFS=',' read -ra tmp_env_projects <<< "$GCP_PROJECTS"
+    for p in "${tmp_env_projects[@]}"; do
+        p=${p//[[:space:]]/}
+        [[ -n "$p" ]] && PROJECT_FILTERS+=("$p")
+    done
 fi
 
 # Prix estimatifs pour les types de machines (USD/mois)
 # Basé sur us-central1, à ajuster selon vos régions
-declare -A MACHINE_COSTS=(
-    ["e2-micro"]=7
-    ["e2-small"]=14
-    ["e2-medium"]=28
-    ["e2-standard-2"]=49
-    ["e2-standard-4"]=98
-    ["n1-standard-1"]=25
-    ["n1-standard-2"]=50
-    ["n1-standard-4"]=100
-    ["n2-standard-2"]=68
-    ["n2-standard-4"]=136
-    ["c2-standard-4"]=180
-    ["m1-ultramem-40"]=4000
-)
+MACHINE_COSTS_DATA=$'e2-micro|7\n'\
+'e2-small|14\n'\
+'e2-medium|28\n'\
+'e2-standard-2|49\n'\
+'e2-standard-4|98\n'\
+'n1-standard-1|25\n'\
+'n1-standard-2|50\n'\
+'n1-standard-4|100\n'\
+'n2-standard-2|68\n'\
+'n2-standard-4|136\n'\
+'c2-standard-4|180\n'\
+'m1-ultramem-40|4000'
 
 # Fonction d'affichage de l'en-tête
 print_header() {
@@ -54,21 +111,26 @@ print_header() {
 
 # Fonction pour obtenir le coût estimé d'une machine
 get_estimated_cost() {
-    local machine_type=$1
+    local machine_type=${1:-}
+    local key value
 
     # Cherche le type exact
-    if [[ -v "MACHINE_COSTS[$machine_type]" ]]; then
-        echo "${MACHINE_COSTS[$machine_type]}"
-        return
-    fi
-
-    # Sinon essaie de trouver un type similaire
-    for key in "${!MACHINE_COSTS[@]}"; do
-        if [[ "$machine_type" == *"$key"* ]]; then
-            echo "${MACHINE_COSTS[$key]}"
+    while IFS='|' read -r key value; do
+        [[ -z "$key" ]] && continue
+        if [[ "$machine_type" == "$key" ]]; then
+            echo "$value"
             return
         fi
-    done
+    done <<< "$MACHINE_COSTS_DATA"
+
+    # Sinon essaie de trouver un type similaire
+    while IFS='|' read -r key value; do
+        [[ -z "$key" ]] && continue
+        if [[ "$machine_type" == *"$key"* ]]; then
+            echo "$value"
+            return
+        fi
+    done <<< "$MACHINE_COSTS_DATA"
 
     echo "?"
 }
@@ -82,6 +144,34 @@ fi
 # Vérification de l'authentification
 if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" &> /dev/null; then
     echo -e "${RED}Erreur: Aucun compte gcloud actif trouvé${NC}" >&2
+    exit 1
+fi
+
+# Détermination des projets à interroger
+project_ids=()
+
+if [[ ${#PROJECT_FILTERS[@]} -gt 0 ]]; then
+    for project_id in "${PROJECT_FILTERS[@]}"; do
+        [[ -z "$project_id" ]] && continue
+        project_ids+=("$project_id")
+    done
+else
+    projects_output=$(gcloud projects list --format="value(projectId)" 2>/dev/null || true)
+    while IFS= read -r project_id; do
+        [[ -z "$project_id" ]] && continue
+        project_ids+=("$project_id")
+    done <<< "$projects_output"
+fi
+
+if [[ ${#project_ids[@]} -eq 0 ]]; then
+    default_project=$(gcloud config get-value project 2>/dev/null || true)
+    if [[ -n "$default_project" && "$default_project" != "(unset)" ]]; then
+        project_ids+=("$default_project")
+    fi
+fi
+
+if [[ ${#project_ids[@]} -eq 0 ]]; then
+    echo -e "${RED}Erreur: Aucun projet trouvé. Utilisez --project ou GCP_PROJECTS.${NC}" >&2
     exit 1
 fi
 
@@ -108,7 +198,7 @@ else
 fi
 
 # Boucle sur tous les projets
-gcloud projects list --format="value(projectId)" | while read -r project_id; do
+for project_id in "${project_ids[@]}"; do
     # Liste les VMs dans ce projet
     vms=$(gcloud compute instances list \
         --project="$project_id" \

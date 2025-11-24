@@ -59,8 +59,10 @@ declare -A SQL_COSTS=(
 
 get_estimated_cost() {
     local tier=$1
-    if [[ -v "SQL_COSTS[$tier]" ]]; then
-        echo "${SQL_COSTS[$tier]}"
+    # Compatibilité Bash 3.2+ (macOS) - évite -v qui nécessite Bash 4.2+
+    local cost="${SQL_COSTS[$tier]:-}"
+    if [[ -n "$cost" ]]; then
+        echo "$cost"
     else
         echo "?"
     fi
