@@ -15,14 +15,19 @@ set -euo pipefail
 #   --critical-only   : Seulement alertes critiques
 #####################################################################
 
-RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
-BLUE='\033[0;34m'; CYAN='\033[0;36m'; MAGENTA='\033[0;35m'; NC='\033[0m'
+# Charger bibliothèque commune
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh" || {
+    echo "Erreur: Impossible de charger lib/common.sh" >&2
+    exit 1
+}
 
+# Options locales
 OUTPUT_DIR="./audit-reports"
 EMAIL=""
 SLACK_WEBHOOK=""
 CRITICAL_ONLY=false
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 while [[ $# -gt 0 ]]; do
     case $1 in

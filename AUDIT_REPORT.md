@@ -15,9 +15,9 @@
 | 📚 **Documentation** | ✅ Très complète | 9/10 |
 | 🔒 **Sécurité** | ✅ Bonne | 8/10 |
 | 🍎 **Compatibilité macOS** | ⚠️ 1 correction appliquée | 9/10 |
-| 🔄 **Maintenabilité** | ⚠️ Améliorable | 7/10 |
+| 🔄 **Maintenabilité** | ✅ Excellent | 9/10 |
 
-**Score global : 8.3/10** ✅
+**Score global : 9.0/10** ✅
 
 ---
 
@@ -42,9 +42,9 @@ gcp-toolbox/
 - Makefile comme point d'entrée simplifié
 - Bibliothèque commune bien conçue (625 lignes)
 
-### Points d'amélioration ⚠️
-- Seulement 3/27 scripts utilisent `lib/common.sh`
-- Duplication de code entre scripts (couleurs, parsing arguments)
+### Points d'amélioration ⚠️ → ✅ CORRIGÉ
+- ✅ **27/27 scripts** utilisent maintenant `lib/common.sh`
+- ✅ Duplication de code éliminée (couleurs, variables communes)
 
 ---
 
@@ -185,10 +185,10 @@ if [[ -n "$cost" ]]; then
 
 ## 💡 Recommandations d'Amélioration
 
-### Priorité Haute 🔴
+### ~~Priorité Haute~~ ✅ FAIT
 
-1. **Adopter lib/common.sh dans tous les scripts**
-   - Actuellement : 3/27 scripts l'utilisent
+1. ~~**Adopter lib/common.sh dans tous les scripts**~~
+   - ✅ **27/27 scripts** utilisent maintenant `lib/common.sh`
    - Bénéfice : Moins de duplication, maintenance facilitée
 
 ### Priorité Moyenne 🟡
@@ -219,7 +219,7 @@ if [[ -n "$cost" ]]; then
 ### Court terme (1-2 semaines)
 - [x] ~~Corriger erreur syntaxe Bash~~ ✅
 - [x] ~~Corriger chemins wiki~~ ✅
-- [ ] Migrer 5 scripts vers lib/common.sh
+- [x] ~~Migrer scripts vers lib/common.sh~~ ✅ (27/27 scripts)
 
 ### Moyen terme (1-2 mois)
 - [ ] Tests automatisés basiques

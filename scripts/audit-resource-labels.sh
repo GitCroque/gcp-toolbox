@@ -16,11 +16,15 @@ set -euo pipefail
 #   --required-labels: Liste des labels obligatoires (ex: env,owner,cost-center)
 #####################################################################
 
-RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
-BLUE='\033[0;34m'; CYAN='\033[0;36m'; NC='\033[0m'
+# Charger bibliothèque commune
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh" || {
+    echo "Erreur: Impossible de charger lib/common.sh" >&2
+    exit 1
+}
 
-JSON_MODE=false
-SINGLE_PROJECT=""
+# Options locales (JSON_MODE et SINGLE_PROJECT définis dans common.sh)
 REQUIRED_LABELS="env,owner,cost-center"
 
 while [[ $# -gt 0 ]]; do
