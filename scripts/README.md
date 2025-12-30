@@ -124,7 +124,8 @@ Ce dossier contient tous les scripts pour la gestion de la plateforme GCP.
 
 **Permissions requises** :
 - `resourcemanager.projects.get`
-- `billing.accounts.get` (optionnel)
+- `billing.accounts.get` (pour voir les noms des comptes)
+- `billing.accounts.list` (optionnel)
 
 **Options** :
 - `--json` : Sortie en format JSON
@@ -132,10 +133,11 @@ Ce dossier contient tous les scripts pour la gestion de la plateforme GCP.
 **Informations collectées** :
 - ID du projet
 - Nom du projet
-- Statut de facturation (enabled/disabled)
+- Statut de facturation (enabled/disabled/unknown)
 - ID du compte de facturation
+- Nom du compte de facturation
 
-**Temps d'exécution** : ~5-15 secondes selon le nombre de projets
+**Temps d'exécution** : ~10-30 secondes selon le nombre de projets (cache utilisé pour les noms de comptes)
 
 **Cas d'usage** :
 - Vérifier que tous les projets de prod ont la facturation activée

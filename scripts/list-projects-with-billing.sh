@@ -66,29 +66,42 @@ if [[ "$JSON_MODE" == true ]]; then
 else
     echo -e "${GREEN}Récupération des projets et de leurs informations de facturation...${NC}"
     echo ""
-    printf "%-30s %-30s %-25s %-30s\n" \
-        "PROJECT_ID" "NAME" "BILLING_ENABLED" "BILLING_ACCOUNT_ID"
-    printf "%-30s %-30s %-25s %-30s\n" \
-        "----------" "----" "---------------" "------------------"
+    printf "%-30s %-25s %-18s %-26s %-30s\n" \
+        "PROJECT_ID" "NAME" "BILLING_ENABLED" "BILLING_ACCOUNT_ID" "BILLING_ACCOUNT_NAME"
+    printf "%-30s %-25s %-18s %-26s %-30s\n" \
+        "----------" "----" "---------------" "------------------" "--------------------"
 fi
 
-# Liste tous les projets
-gcloud projects list --format="value(projectId,name,projectNumber)" | while IFS=$'\t' read -r project_id name project_number; do
-    ((total_projects++))
+# Cache pour les noms des comptes de facturation
+declare -A billing_account_names
+
+# Liste tous les projets (substitution de processus pour éviter le sous-shell)
+while IFS=$'\t' read -r project_id name project_number; do
+    ((total_projects++)) || true
 
     # Récupère les informations de facturation pour ce projet
     billing_info=$(gcloud beta billing projects describe "$project_id" \
-        --format="value(billingAccountName,billingEnabled)" 2>/dev/null || echo "unknown${TAB}unknown")
+        --format="value(billingAccountName,billingEnabled)" 2>/dev/null || echo $'unknown\tunknown')
 
     IFS=$'\t' read -r billing_account billing_enabled <<< "$billing_info"
 
     # Extraction du nom du compte de facturation
     if [[ "$billing_account" != "unknown" && -n "$billing_account" ]]; then
         billing_account_id=$(basename "$billing_account")
-        ((projects_with_billing++))
+        ((projects_with_billing++)) || true
+
+        # Récupère le nom du compte de facturation (avec cache)
+        if [[ -z "${billing_account_names[$billing_account_id]:-}" ]]; then
+            billing_account_name=$(gcloud billing accounts describe "$billing_account_id" \
+                --format="value(displayName)" 2>/dev/null || echo "N/A")
+            billing_account_names[$billing_account_id]="$billing_account_name"
+        else
+            billing_account_name="${billing_account_names[$billing_account_id]}"
+        fi
     else
         billing_account_id="none"
-        ((projects_without_billing++))
+        billing_account_name="-"
+        ((projects_without_billing++)) || true
     fi
 
     # Gestion du statut de facturation
@@ -107,13 +120,15 @@ gcloud projects list --format="value(projectId,name,projectNumber)" | while IFS=
         # Échapper les guillemets dans le nom
         safe_name=$(echo "$name" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
 
+        safe_billing_name=$(echo "$billing_account_name" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
         cat <<EOF
     {
       "project_id": "$project_id",
       "name": "$safe_name",
       "project_number": "$project_number",
       "billing_enabled": "$billing_status",
-      "billing_account_id": "$billing_account_id"
+      "billing_account_id": "$billing_account_id",
+      "billing_account_name": "$safe_billing_name"
     }
 EOF
     else
@@ -126,13 +141,15 @@ EOF
             status_colored="${RED}unknown${NC}"
         fi
 
-        printf "%-30s %-30s %-34s %-30s\n" \
+        # Les codes ANSI ajoutent ~14 caractères invisibles, on compense
+        printf "%-30s %-25s %-32b %-26s %-30s\n" \
             "${project_id:0:28}" \
-            "${name:0:28}" \
+            "${name:0:23}" \
             "$status_colored" \
-            "${billing_account_id:0:28}"
+            "${billing_account_id:0:24}" \
+            "${billing_account_name:0:28}"
     fi
-done
+done < <(gcloud projects list --format="value(projectId,name,projectNumber)")
 
 if [[ "$JSON_MODE" == true ]]; then
     echo ""
