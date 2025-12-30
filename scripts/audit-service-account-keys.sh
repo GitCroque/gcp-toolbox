@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #####################################################################
 # Script: audit-service-account-keys.sh

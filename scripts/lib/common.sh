@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #####################################################################
 # Bibliothèque commune pour tous les scripts GCP Toolbox
@@ -39,7 +39,7 @@ declare -g BSD_DATE_AVAILABLE=false
 
 if command -v gdate >/dev/null 2>&1; then
     GNU_DATE_BIN="$(command -v gdate)"
-elif date -d "@0" +%s >/dev/null 2>&1; then
+elif (date -d "@0" +%s) >/dev/null 2>&1; then
     GNU_DATE_BIN="date"
 fi
 
@@ -74,8 +74,8 @@ log() {
     case $level in
         ERROR) echo -e "${RED}[ERROR] $message${NC}" >&2 ;;
         WARN)  echo -e "${YELLOW}[WARN] $message${NC}" >&2 ;;
-        INFO)  [[ "$LOG_LEVEL" != "QUIET" ]] && echo -e "${GREEN}[INFO] $message${NC}" ;;
-        DEBUG) [[ "$LOG_LEVEL" == "DEBUG" ]] && echo -e "${CYAN}[DEBUG] $message${NC}" ;;
+        INFO)  [[ "$LOG_LEVEL" != "QUIET" ]] && echo -e "${GREEN}[INFO] $message${NC}" || true ;;
+        DEBUG) [[ "$LOG_LEVEL" == "DEBUG" ]] && echo -e "${CYAN}[DEBUG] $message${NC}" || true ;;
     esac
 }
 
