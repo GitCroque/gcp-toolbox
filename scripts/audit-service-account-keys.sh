@@ -133,10 +133,10 @@ if [[ "$JSON_MODE" == true ]]; then
 else
     echo -e "${GREEN}Récupération des clés de service accounts...${NC}"
     echo ""
-    printf "%-40s %-80s %-12s %-12s %-15s %-12s\n" \
-        "PROJECT_ID" "SERVICE_ACCOUNT" "KEY_TYPE" "AGE_DAYS" "LAST_USED" "RISK_LEVEL"
-    printf "%-40s %-80s %-12s %-12s %-15s %-12s\n" \
-        "----------" "---------------" "--------" "--------" "---------" "----------"
+    printf "%-30s %-45s %-15s %-10s %-12s\n" \
+        "PROJECT_ID" "SERVICE_ACCOUNT" "KEY_TYPE" "AGE_DAYS" "RISK_LEVEL"
+    printf "%-30s %-45s %-15s %-10s %-12s\n" \
+        "----------" "---------------" "--------" "--------" "----------"
 fi
 
 # Détermine la liste des projets
@@ -174,8 +174,8 @@ while read -r project_id; do
                         continue
                     fi
 
-                    ((total_keys++))
-                    ((user_managed_keys++))
+                    ((total_keys++)) || true
+                    ((user_managed_keys++)) || true
 
                     # Calcule l'âge de la clé
                     age_days=$(calculate_days_ago "$valid_after")
@@ -194,10 +194,10 @@ while read -r project_id; do
 
                     # Compte les risques
                     case $risk_level in
-                        CRITICAL) ((critical_keys++)) ;;
-                        HIGH) ((high_risk_keys++)) ;;
-                        MEDIUM) ((medium_risk_keys++)) ;;
-                        LOW) ((low_risk_keys++)) ;;
+                        CRITICAL) ((critical_keys++)) || true ;;
+                        HIGH) ((high_risk_keys++)) || true ;;
+                        MEDIUM) ((medium_risk_keys++)) || true ;;
+                        LOW) ((low_risk_keys++)) || true ;;
                     esac
 
                     # Extraction de l'ID de la clé
@@ -219,22 +219,20 @@ while read -r project_id; do
     }
 EOF
                     else
-                        # Affiche uniquement si risque >= MEDIUM ou si tous (mode verbeux)
-                        if [[ "$risk_level" != "LOW" ]]; then
-                            risk_color=$(get_risk_color "$risk_level")
-                            risk_display="${risk_color}${risk_level}${NC}"
+                        # Affiche toutes les clés USER_MANAGED
+                        risk_color=$(get_risk_color "$risk_level")
+                        risk_display="${risk_color}${risk_level}${NC}"
 
-                            # Tronque le service account pour l'affichage
-                            sa_short="${sa_email:0:78}"
+                        # Tronque le service account pour l'affichage
+                        sa_short="${sa_email:0:43}"
 
-                            printf "%-40s %-80s %-12s %-12s %-15s %-21s\n" \
-                                "${project_id:0:38}" \
-                                "$sa_short" \
-                                "$key_type" \
-                                "$age_days" \
-                                "$never_used" \
-                                "$risk_display"
-                        fi
+                        # Les codes ANSI ajoutent ~14 caractères invisibles
+                        printf "%-30s %-45s %-15s %-10s %-26b\n" \
+                            "${project_id:0:28}" \
+                            "$sa_short" \
+                            "$key_type" \
+                            "$age_days" \
+                            "$risk_display"
                     fi
                 done <<< "$keys"
             fi
