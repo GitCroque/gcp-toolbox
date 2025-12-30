@@ -2,11 +2,11 @@
 set -euo pipefail
 
 #####################################################################
-# Script: setup-carnet.sh
+# Script: setup-gcp-toolbox.sh
 # Description: Vérifie les prérequis et configure GCP Toolbox
 #              pour la première utilisation
 #
-# Usage: ./setup-carnet.sh
+# Usage: ./setup-gcp-toolbox.sh
 #####################################################################
 
 # Charger bibliothèque commune
