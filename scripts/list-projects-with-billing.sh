@@ -80,13 +80,15 @@ while IFS=$'\t' read -r project_id name project_number; do
     ((total_projects++)) || true
 
     # Récupère les informations de facturation pour ce projet
-    billing_info=$(gcloud beta billing projects describe "$project_id" \
-        --format="value(billingAccountName,billingEnabled)" 2>/dev/null || echo $'unknown\tunknown')
+    billing_info=$(gcloud billing projects describe "$project_id" \
+        --format="value(billingAccountName,billingEnabled)" 2>/dev/null) || true
 
-    IFS=$'\t' read -r billing_account billing_enabled <<< "$billing_info"
+    # Parse les résultats (peuvent être vides)
+    billing_account=$(echo "$billing_info" | cut -f1)
+    billing_enabled=$(echo "$billing_info" | cut -f2)
 
     # Extraction du nom du compte de facturation
-    if [[ "$billing_account" != "unknown" && -n "$billing_account" ]]; then
+    if [[ -n "$billing_account" && "$billing_account" != "" ]]; then
         billing_account_id=$(basename "$billing_account")
         ((projects_with_billing++)) || true
 
@@ -99,15 +101,17 @@ while IFS=$'\t' read -r project_id name project_number; do
             billing_account_name="${billing_account_names[$billing_account_id]}"
         fi
     else
-        billing_account_id="none"
+        billing_account_id="-"
         billing_account_name="-"
         ((projects_without_billing++)) || true
     fi
 
     # Gestion du statut de facturation
-    if [[ "$billing_enabled" == "True" || "$billing_enabled" == "true" ]]; then
+    if [[ "$billing_enabled" == "True" ]]; then
         billing_status="enabled"
-    elif [[ "$billing_enabled" == "False" || "$billing_enabled" == "false" ]]; then
+    elif [[ "$billing_enabled" == "False" ]]; then
+        billing_status="disabled"
+    elif [[ -z "$billing_enabled" ]]; then
         billing_status="disabled"
     else
         billing_status="unknown"
