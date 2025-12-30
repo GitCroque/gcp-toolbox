@@ -163,10 +163,13 @@ while read -r project_id; do
     # Récupère la policy IAM du projet
     iam_policy=$(gcloud projects get-iam-policy "$project_id" \
         --flatten="bindings[].members" \
-        --format="table[no-heading](bindings.role,bindings.members)" 2>/dev/null || echo "")
+        --format="value(bindings.role,bindings.members)" 2>/dev/null || echo "")
 
     if [[ -n "$iam_policy" ]]; then
         while IFS=$'\t' read -r role member; do
+            # Skip lignes vides ou incomplètes
+            [[ -z "$role" || -z "$member" ]] && continue
+
             # Applique les filtres si définis
             if [[ -n "$FILTER_ROLE" && "$role" != "$FILTER_ROLE" ]]; then
                 continue
@@ -175,17 +178,17 @@ while read -r project_id; do
                 continue
             fi
 
-            ((total_bindings++))
+            ((total_bindings++)) || true
 
             # Compte les types de rôles
             if [[ "$role" == "roles/owner" ]]; then
-                ((owner_count++))
+                ((owner_count++)) || true
             elif [[ "$role" == "roles/editor" ]]; then
-                ((editor_count++))
+                ((editor_count++)) || true
             elif [[ "$role" == "roles/viewer" ]]; then
-                ((viewer_count++))
+                ((viewer_count++)) || true
             else
-                ((custom_count++))
+                ((custom_count++)) || true
             fi
 
             member_type=$(simplify_member_type "$member")
@@ -224,7 +227,7 @@ EOF
                     type_colored="$member_type"
                 fi
 
-                printf "%-30s %-40s %-34s %-19s\n" \
+                printf "%-30s %-40s %-34b %-19b\n" \
                     "${project_id:0:28}" \
                     "${member_name:0:38}" \
                     "$role_colored" \
