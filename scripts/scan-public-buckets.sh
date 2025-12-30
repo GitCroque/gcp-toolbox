@@ -150,10 +150,10 @@ if [[ "$JSON_MODE" == true ]]; then
 else
     echo -e "${GREEN}Scanning Cloud Storage buckets...${NC}"
     echo ""
-    printf "%-40s %-50s %-15s %-20s %-15s\n" \
-        "PROJECT_ID" "BUCKET_NAME" "LOCATION" "PUBLIC_ACCESS" "SIZE"
-    printf "%-40s %-50s %-15s %-20s %-15s\n" \
-        "----------" "-----------" "--------" "-------------" "----"
+    printf "%-30s %-40s %-15s %-25s\n" \
+        "PROJECT_ID" "BUCKET_NAME" "LOCATION" "PUBLIC_ACCESS"
+    printf "%-30s %-40s %-15s %-25s\n" \
+        "----------" "-----------" "--------" "-------------"
 fi
 
 # Détermine la liste des projets
@@ -176,26 +176,25 @@ while read -r project_id; do
     if [[ -n "$buckets" ]]; then
         while read -r bucket; do
             [[ -z "$bucket" ]] && continue
-            ((total_buckets++))
+            ((total_buckets++)) || true
 
             # Récupère les infos du bucket
             bucket_info=$(gcloud storage buckets describe "gs://$bucket" \
-                --format="value(location,storageClass)" 2>/dev/null || echo "unknown|unknown")
-
-            IFS='|' read -r location storage_class <<< "$bucket_info"
+                --format="value(location)" 2>/dev/null || echo "unknown")
+            location="${bucket_info:-unknown}"
 
             # Vérifie si public
             public_check=$(check_bucket_public "$bucket")
             IFS='|' read -r is_public public_type <<< "$public_check"
 
             if [[ "$is_public" == "true" ]]; then
-                ((public_buckets++))
+                ((public_buckets++)) || true
 
                 if [[ "$public_type" == *"allUsers"* ]]; then
-                    ((all_users_buckets++))
+                    ((all_users_buckets++)) || true
                 fi
                 if [[ "$public_type" == *"allAuthenticatedUsers"* ]]; then
-                    ((all_authenticated_buckets++))
+                    ((all_authenticated_buckets++)) || true
                 fi
 
                 # Taille du bucket (optionnel, peut être lent)
@@ -225,12 +224,12 @@ EOF
                         public_display="${YELLOW}AUTH (allAuth*)${NC}"
                     fi
 
-                    printf "%-40s %-50s %-15s %-29s %-15s\n" \
-                        "${project_id:0:38}" \
-                        "${bucket:0:48}" \
+                    # Les codes ANSI ajoutent ~14 caractères invisibles
+                    printf "%-30s %-40s %-15s %-39b\n" \
+                        "${project_id:0:28}" \
+                        "${bucket:0:38}" \
                         "${location:0:13}" \
-                        "$public_display" \
-                        "$size_formatted"
+                        "$public_display"
                 fi
             fi
         done <<< "$buckets"
