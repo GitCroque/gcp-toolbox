@@ -17,7 +17,7 @@
 # Détection:
 #   - allUsers (public internet)
 #   - allAuthenticatedUsers (tout utilisateur GCP authentifié)
-#   - Uniformbucket-level access non activé
+#   - Prend en compte Public Access Prevention (enforced/inherited)
 #####################################################################
 
 set -euo pipefail
@@ -63,6 +63,15 @@ print_header() {
 # Fonction pour vérifier si un bucket est public
 check_bucket_public() {
     local bucket=$1
+
+    # Vérifie d'abord si Public Access Prevention est activée
+    local pap_status=$(gsutil publicaccessprevention get "gs://$bucket" 2>/dev/null | grep -oE '(enforced|inherited)' || echo "")
+    if [[ "$pap_status" == "enforced" || "$pap_status" == "inherited" ]]; then
+        # Public Access Prevention est activée, le bucket n'est pas vraiment public
+        echo "false|"
+        return
+    fi
+
     local iam_policy=$(gsutil iam get "gs://$bucket" 2>/dev/null || echo "")
 
     local is_public=false
