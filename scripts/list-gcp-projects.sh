@@ -76,8 +76,12 @@ echo ""
 printf "%-30s %-30s %-25s %-50s\n" "PROJECT_ID" "NAME" "CREATE_TIME" "OWNER"
 printf "%-30s %-30s %-25s %-50s\n" "----------" "----" "-----------" "-----"
 
-# Liste tous les projets
-gcloud projects list --format="value(projectId,name,createTime)" | while IFS=$'\t' read -r project_id name create_time; do
+# Compteur
+total_projects=0
+
+# Liste tous les projets (utilise process substitution pour garder le compteur)
+while IFS=$'\t' read -r project_id name create_time; do
+    ((total_projects++)) || true
     # Récupère le propriétaire
     owner=$(get_project_owner "$project_id")
 
@@ -90,7 +94,11 @@ gcloud projects list --format="value(projectId,name,createTime)" | while IFS=$'\
         "${name:0:28}" \
         "$formatted_date" \
         "$owner"
-done
+done < <(gcloud projects list --format="value(projectId,name,createTime)")
 
+# Résumé
 echo ""
-echo -e "${GREEN}Terminé!${NC}"
+echo -e "${CYAN}========== Résumé ==========${NC}"
+echo -e "Total projets listés: ${BLUE}$total_projects${NC}"
+echo ""
+echo -e "${GREEN}✓ Terminé${NC}"
