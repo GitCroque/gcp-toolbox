@@ -14,6 +14,7 @@ set -euo pipefail
 #   --json                : Sortie JSON
 #   --inactive-days DAYS  : Seuil d'inactivité (défaut: 180 jours)
 #   --dry-run             : Mode simulation (ne supprime rien)
+#   --project PROJECT_ID  : Analyser un seul projet
 #####################################################################
 
 # Charger bibliothèque commune
@@ -33,6 +34,7 @@ while [[ $# -gt 0 ]]; do
         --json) JSON_MODE=true; shift ;;
         --inactive-days) INACTIVE_DAYS="$2"; shift 2 ;;
         --dry-run) DRY_RUN=true; shift ;;
+        --project) SINGLE_PROJECT="$2"; shift 2 ;;
         *) echo "Option inconnue: $1" >&2; exit 1 ;;
     esac
 done
@@ -64,16 +66,29 @@ total_estimated_savings=0
     printf "%-30s %-15s %-15s %-20s %-20s\n" "----------" "---------" "---------" "------" "--------------"
 }
 
-projects=$(gcloud projects list --format="value(projectId)" 2>/dev/null)
+# Détermine la liste des projets
+if [[ -n "$SINGLE_PROJECT" ]]; then
+    projects="$SINGLE_PROJECT"
+else
+    projects=$(gcloud projects list --format="value(projectId)" 2>/dev/null)
+fi
 
 while read -r project_id; do
     [[ -z "$project_id" ]] && continue
-    ((total_projects++))
+    ((total_projects++)) || true
 
-    # Compte ressources
-    vm_count=$(gcloud compute instances list --project="$project_id" 2>/dev/null | wc -l || echo 0)
-    sql_count=$(gcloud sql instances list --project="$project_id" 2>/dev/null | wc -l || echo 0)
-    gke_count=$(gcloud container clusters list --project="$project_id" 2>/dev/null | wc -l || echo 0)
+    # Afficher progression
+    [[ "$JSON_MODE" == false ]] && echo -ne "\r${CYAN}Analyse: ${project_id}${NC}                              " >&2
+
+    # Compte ressources (--quiet évite les prompts interactifs, || true évite l'arrêt si API non activée)
+    vm_output=$(gcloud compute instances list --project="$project_id" --format="value(name)" --quiet 2>/dev/null || true)
+    vm_count=$(echo "$vm_output" | grep -c . 2>/dev/null) || vm_count=0
+
+    sql_output=$(gcloud sql instances list --project="$project_id" --format="value(name)" --quiet 2>/dev/null || true)
+    sql_count=$(echo "$sql_output" | grep -c . 2>/dev/null) || sql_count=0
+
+    gke_output=$(gcloud container clusters list --project="$project_id" --format="value(name)" --quiet 2>/dev/null || true)
+    gke_count=$(echo "$gke_output" | grep -c . 2>/dev/null) || gke_count=0
 
     total_resources=$((vm_count + sql_count + gke_count))
 
@@ -84,15 +99,15 @@ while read -r project_id; do
     if [[ $total_resources -eq 0 ]]; then
         status="empty"
         recommendation="DELETE"
-        ((potential_deletion++))
+        ((potential_deletion++)) || true
     elif [[ $vm_count -eq 0 && $sql_count -eq 0 && $gke_count -gt 0 ]]; then
         status="inactive"
         recommendation="REVIEW"
-        ((inactive_projects++))
+        ((inactive_projects++)) || true
         estimated_monthly_cost=100
     fi
 
-    ((total_estimated_savings+=estimated_monthly_cost))
+    ((total_estimated_savings+=estimated_monthly_cost)) || true
 
     if [[ "$recommendation" != "KEEP" ]]; then
         [[ "$JSON_MODE" == true ]] && {
@@ -100,15 +115,21 @@ while read -r project_id; do
             first=false
             echo "    {\"project\":\"$project_id\",\"vm_count\":$vm_count,\"sql_count\":$sql_count,\"status\":\"$status\",\"recommendation\":\"$recommendation\",\"monthly_cost\":$estimated_monthly_cost}"
         } || {
+            # Effacer la ligne de progression avant d'afficher
+            echo -ne "\r                                                                        \r" >&2
+
             rec_display="$recommendation"
             [[ "$recommendation" == "DELETE" ]] && rec_display="${RED}DELETE${NC}"
             [[ "$recommendation" == "REVIEW" ]] && rec_display="${YELLOW}REVIEW${NC}"
 
-            printf "%-30s %-15s %-15s %-20s %-29s\n" \
+            printf "%-30s %-15s %-15s %-20s %-29b\n" \
                 "${project_id:0:28}" "$vm_count" "$sql_count" "$status" "$rec_display"
         }
     fi
 done <<< "$projects"
+
+# Effacer la ligne de progression finale
+[[ "$JSON_MODE" == false ]] && echo -ne "\r                                                                        \r" >&2
 
 [[ "$JSON_MODE" == true ]] && {
     echo '\n  ],'
