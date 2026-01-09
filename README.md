@@ -3,122 +3,131 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Shell](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
 [![GCP](https://img.shields.io/badge/Cloud-Google%20Cloud-4285F4.svg)](https://cloud.google.com/)
-[![Scripts](https://img.shields.io/badge/Scripts-27-brightgreen.svg)]()
+[![Scripts](https://img.shields.io/badge/Scripts-30-brightgreen.svg)]()
 [![Documentation](https://img.shields.io/badge/Docs-Wiki-blue.svg)](https://github.com/GitCroque/gcp-toolbox/wiki)
 
-**Collection de 27 scripts Bash pour auditer, sécuriser et optimiser Google Cloud Platform.**
+**Collection of 30 Bash scripts to audit, secure, and optimize Google Cloud Platform.**
 
 ---
 
-## 🎯 À quoi sert ce dépôt ?
+## 🎯 What is this repository for?
 
-Ce dépôt contient des **scripts shell pratiques** pour gérer votre infrastructure Google Cloud Platform :
+This repository contains **practical shell scripts** to manage your Google Cloud Platform infrastructure:
 
-- 🔐 **Sécurité** : détecter les buckets publics, clés anciennes, règles firewall dangereuses
-- 💰 **Optimisation des coûts** : identifier les ressources inutilisées, opportunités de rightsizing
-- 📦 **Inventaire** : lister VMs, bases de données, clusters Kubernetes
-- 🏛️ **Gouvernance** : vérifier les labels, contacter les propriétaires de projets
+- 🔐 **Security**: detect public buckets, old keys, dangerous firewall rules
+- 💰 **Cost optimization**: identify unused resources, rightsizing opportunities
+- 📦 **Inventory**: list VMs, databases, Kubernetes clusters
+- 🏛️ **Governance**: verify labels, contact project owners, manage project lifecycle
 
-**Philosophie** : exécution manuelle sur demande, vous gardez le contrôle total.
+**Philosophy**: manual execution on demand, you keep full control.
 
 ---
 
-## 🚀 Installation rapide
+## 🚀 Quick Start
 
 ```bash
-# 1. Cloner le dépôt
+# 1. Clone the repository
 git clone https://github.com/GitCroque/gcp-toolbox.git
 cd gcp-toolbox
 
-# 2. Configuration initiale
+# 2. Initial setup
 make setup
 
-# 3. Authentification GCP
+# 3. GCP authentication
 gcloud auth login
 
-# 4. Lancer votre premier audit
+# 4. Run your first audit
 ./scripts/scan-public-buckets.sh
 ./scripts/list-all-vms.sh
 ```
 
 ---
 
-## 📊 Scripts principaux
+## 📊 Main Scripts
 
-### 🔴 Sécurité critique
+### 🔴 Critical Security
 
 ```bash
-./scripts/scan-public-buckets.sh           # Buckets exposés publiquement
-./scripts/audit-firewall-rules.sh          # Règles firewall dangereuses
-./scripts/audit-service-account-keys.sh    # Clés anciennes (>365 jours)
-./scripts/audit-database-backups.sh        # Backups Cloud SQL manquants
+./scripts/scan-public-buckets.sh           # Publicly exposed buckets
+./scripts/audit-firewall-rules.sh          # Dangerous firewall rules
+./scripts/audit-service-account-keys.sh    # Old keys (>365 days)
+./scripts/audit-database-backups.sh        # Missing Cloud SQL backups
 ```
 
-### 💰 Optimisation des coûts
+### 💰 Cost Optimization
 
 ```bash
-./scripts/find-unused-resources.sh         # Ressources inutilisées
-./scripts/compare-vm-rightsizing.sh        # Opportunités de rightsizing
-./scripts/check-preemptible-candidates.sh  # Migration vers Spot VMs
+./scripts/find-unused-resources.sh         # Unused resources
+./scripts/compare-vm-rightsizing.sh        # Rightsizing opportunities
+./scripts/check-preemptible-candidates.sh  # Migration to Spot VMs
+./scripts/cleanup-old-projects.sh          # Identify inactive projects
 ```
 
-### 📦 Inventaire
+### 📦 Inventory
 
 ```bash
-./scripts/list-all-vms.sh                  # Toutes les VMs + coûts
-./scripts/list-cloud-sql-instances.sh      # Bases de données
-./scripts/list-gke-clusters.sh             # Clusters Kubernetes
-./scripts/list-gcp-projects.sh             # Tous les projets
+./scripts/list-all-vms.sh                  # All VMs + costs
+./scripts/list-cloud-sql-instances.sh      # Databases
+./scripts/list-gke-clusters.sh             # Kubernetes clusters
+./scripts/list-gcp-projects.sh             # All projects
 ```
 
-### 🛠️ Commandes Makefile
+### 🗑️ Governance
 
 ```bash
-make help          # Liste toutes les commandes
-make security      # Audits sécurité
-make costs         # Analyse coûts
-make inventory     # Inventaire complet
+./scripts/delete-projects.sh               # Delete projects from file
+./scripts/delete-orphan-projects.sh        # Delete projects without owner
+./scripts/project-usage-score.sh           # Usage score (0-100) per project
+```
+
+### 🛠️ Makefile Commands
+
+```bash
+make help          # List all commands
+make security      # Security audits
+make costs         # Cost analysis
+make inventory     # Full inventory
 ```
 
 ---
 
-## 📁 Structure du dépôt
+## 📁 Repository Structure
 
 ```
 gcp-toolbox/
-├── scripts/           # 27 scripts Bash
-│   ├── lib/          # Bibliothèque commune
-│   └── *.sh          # Scripts individuels
-├── config/           # Configuration (prix GCP)
-├── archives/         # CI/CD optionnels
-├── Makefile          # Commandes rapides
+├── scripts/           # 30 Bash scripts
+│   ├── lib/          # Common library
+│   └── *.sh          # Individual scripts
+├── config/           # Configuration (GCP prices)
+├── archives/         # Optional CI/CD
+├── Makefile          # Quick commands
 ├── LICENSE           # MIT License
-└── README.md         # Ce fichier
+└── README.md         # This file
 ```
 
 ---
 
-## 📚 Documentation complète
+## 📚 Full Documentation
 
-Toute la documentation est disponible sur le **[Wiki GitHub](https://github.com/GitCroque/gcp-toolbox/wiki)** :
+All documentation is available on the **[GitHub Wiki](https://github.com/GitCroque/gcp-toolbox/wiki)**:
 
 - 🚀 [Quick Start](https://github.com/GitCroque/gcp-toolbox/wiki/Quick-Start)
-- 📖 [Guide complet](https://github.com/GitCroque/gcp-toolbox/wiki/Home)
-- 🔄 [Workflows recommandés](https://github.com/GitCroque/gcp-toolbox/wiki/Workflows)
+- 📖 [Complete Guide](https://github.com/GitCroque/gcp-toolbox/wiki/Home)
+- 🔄 [Recommended Workflows](https://github.com/GitCroque/gcp-toolbox/wiki/Workflows)
 - ❓ [FAQ](https://github.com/GitCroque/gcp-toolbox/wiki/FAQ)
-- 📊 [Rapports d'audit technique](https://github.com/GitCroque/gcp-toolbox/wiki/AUDIT_REPORT)
+- 📊 [Technical Audit Reports](https://github.com/GitCroque/gcp-toolbox/wiki/AUDIT_REPORT)
 
 ---
 
-## 🤝 Contribution
+## 🤝 Contributing
 
-Les contributions sont bienvenues ! Consultez le [guide de contribution](https://github.com/GitCroque/gcp-toolbox/wiki/CONTRIBUTING) sur le wiki.
+Contributions are welcome! Check the [contribution guide](https://github.com/GitCroque/gcp-toolbox/wiki/CONTRIBUTING) on the wiki.
 
 ---
 
-## 📝 Licence
+## 📝 License
 
-MIT License - Voir [LICENSE](LICENSE)
+MIT License - See [LICENSE](LICENSE)
 
 ---
 
@@ -130,4 +139,4 @@ MIT License - Voir [LICENSE](LICENSE)
 
 ---
 
-**Développé avec ❤️ pour les équipes GCP qui veulent garder le contrôle**
+**Built with ❤️ for GCP teams who want to stay in control**
